@@ -21,7 +21,7 @@
 \author[3,4]{Ignacio Spiousas}
 \author[2,4]{Rodrigo Laje}
 \affil[1]{\small Departamento de Física, FCEN, Universidad de Buenos Aires, Argentina}
-\affil[2]{Departamento de Ciencia y Tecnología, Universidad Nacional de Quilmes, Argentina}
+\affil[2]{Laboratorio de Dinámica Sensomotora, Departamento de Ciencia y Tecnología, Universidad Nacional de Quilmes, Argentina}
 \affil[3]{Laboratorio del Tiempo y la Experiencia, Universidad de San Andrés, Argentina}
 \affil[4]{CONICET, Argentina}
 
@@ -61,37 +61,38 @@ The device is intended to be versatile and to allow many different types of expe
 \end{description}
 
 
+\section{Hardware}
 
-\section{Circuit design}
+\subsection{Circuit design}
 
 We designed the circuit under the constraint that all op amps should be single-supply (LM324) so the shield is fully compatible with the voltage range of Arduino. There are several technical reports available with recommendations and design criteria for single-supply op amp circuits \cite{singlesupply2000}.
 
 We used Eagle, a well-known electronic design automation software for schematic creation and editing, auto-routing, and PCB layout. The circuit was tested on protoboard before printing and soldering. Figure \ref{fig.schematic} shows the circuit schematic.
 
 
-\subsection{Virtual ground}
+\subsubsection{Virtual ground}
 
-Block 1 in Figure \ref{fig.schematic} is a standard design of a virtual ground: a voltage divider with an op amp in a follower configuration \cite{singlesupply2000}. This allows us to match the impedance by decoupling the voltage divider from the rest of the circuit (ideal voltage divider). An additional capacitor helps filtering out high-frequency noise.
+Block 1 in Figure \ref{fig.schematic} is a standard design of a virtual ground: a voltage divider with an op amp in a follower configuration \cite{singlesupply2000}. This allows us to decouple the voltage divider from the rest of the circuit (ideal voltage divider). An additional capacitor helps filtering out high-frequency noise.
 
 
-\subsection{Independent audio channels}
+\subsubsection{Independent audio channels}
 
 Block 2 in Figure \ref{fig.schematic} contains the two independent audio channels A and B (left and right, respectively). Each channel has an op amp in a variable-gain, summing amplifier configuration. Each summing amplifier has three inputs corresponding to stimulus, feedback, and noise. Each input signal comes from a different output pin in the Arduino and enters a voltage divider prior to the summing amplifier to prevent saturation. The variable gain is controlled by a dual potentiometer and allows the subject to adjust the sound volume. The reference voltage for the summing amplifier is virtual ground. Resistor values were chosen so that the impedance at each stage in the chain divider-summing-amplifier is an order of magnitude greater than the previous stage (10 k$\Omega$, 100 k$\Omega$, 1 M$\Omega$), thereby reducing unwanted currents and voltage drops.
 
 
-\subsection{Alignment, visual stimuli, and servos}
+\subsubsection{Alignment, visual stimuli, and servos}
 
 Block 3 in Figure \ref{fig.schematic} includes a 3-pin connector for sending a temporal alignment signal to other devices, two LEDs for the delivery of visual stimuli, and two 3-pin connectors for driving two servos.
 
 
-\subsection{Force sensors}
+\subsubsection{Force sensors}
 
 Block 4 in Figure \ref{fig.schematic} shows the connectors for the two force sensors. Each sensor has a potentiometer (trimpot) to adjust the circuit's sensitivity so it can either detect a soft tap (i.e.\ a low-voltage signal) or prevent a strong tap from saturating (i.e.\ a high-voltage signal).
 
 
-\subsection{Low-pass filtering}
+\subsubsection{Low-pass filtering}
 
-We decided not to include a low-pass filter due to space constraints: two additional op amps would be needed (one for each audio channel), meaning a whole additional integrated circuit plus its connections, in addition to resistors and capacitors. As shown below (Figure \ref{fig.BRDCompleto}), the PCB is already very crowded for hand soldering and a double-layer copper-clad laminate was necessary to accommodate all traces. However, noise capabilities are included as described above; in case noise is desired, an external low-pass filter should be added between the audio output of the shield and the headphones.
+We decided not to include a low-pass filter due to space constraints: two additional op amps would be needed (one for each audio channel), meaning a whole additional integrated circuit plus its connections, in addition to resistors and capacitors. As shown below (Figure \ref{fig.BRDCompleto}), the PCB is already very crowded for hand soldering and a double-sided copper-clad laminate was necessary to accommodate all traces. However, noise capabilities are included as described above; in case noise is desired, an external low-pass filter should be added between the audio output of the shield and the headphones.
 
 
 
@@ -115,7 +116,7 @@ We decided not to include a low-pass filter due to space constraints: two additi
 
 
 
-\section{PCB design}
+\subsection{PCB design}
 
 Components were initially located based on a trade-off among several criteria: proximity to corresponding Arduino pins, proximity among related components, simplicity and accessibility for the user, and simplicity for soldering. We decided to use a double-sided copper-clad laminate. We took into account the following specific considerations:
 
@@ -145,7 +146,9 @@ Figure \ref{fig.BRDCompleto} shows the final design of the PCB. We attempted sev
 
 \begin{figure*}[!ht]
     \centering
-    \includegraphics[width=0.75\linewidth]{figures/CircCollage_conCarteles.png}
+%    \includegraphics[width=0.75\linewidth]{figures/CircCollage_conCarteles.png}
+    \includegraphics[width=0.75\linewidth]{figures/shield_fromabove.jpg}
+    \includegraphics[width=0.75\linewidth]{figures/shield_angled.jpg}
     \caption{Actual finished shield, plugged on top of Arduino.}
     \label{fig.HardwareFinal}
 \end{figure*}
@@ -155,7 +158,7 @@ Figure \ref{fig.BRDCompleto} shows the final design of the PCB. We attempted sev
 
 
 
-\section{Software and flow control}
+\section{Software}
 
 \subsection{Flow control}
 
