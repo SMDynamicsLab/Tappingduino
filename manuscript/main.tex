@@ -1,4 +1,4 @@
-\documentclass[twocolumn]{article}
+    \documentclass[twocolumn]{article}
 
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -92,7 +92,7 @@ Block 4 in Figure \ref{fig.schematic} shows the connectors for the two force sen
 
 \subsubsection{Low-pass filtering}
 
-We decided not to include a low-pass filter due to space constraints: two additional op amps would be needed (one for each audio channel), meaning a whole additional integrated circuit plus its connections, in addition to resistors and capacitors. As shown below (Figure \ref{fig.BRDCompleto}), the PCB is already very crowded for hand soldering and a double-sided copper-clad laminate was necessary to accommodate all traces. However, noise capabilities are included as described above; in case noise is desired, an external low-pass filter should be added between the audio output of the shield and the headphones.
+We decided not to include a low-pass filter due to space constraints: two additional op amps would be needed (one for each audio channel), meaning a whole additional integrated circuit plus its connections, in addition to resistors and capacitors. As shown below (Figure \ref{fig.BRDCompleto}), the PCB is already very crowded for hand soldering and a double-sided copper-clad laminate was necessary to accommodate all traces. However, noise generation capabilities are included as described above; in case noise is desired, an external low-pass filter should be added between the audio output of the shield and the headphones.
 
 
 
@@ -173,7 +173,7 @@ The general control of flow during the experiment is performed by an experiment 
 
 We based our Arduino software development on Taparduino \cite{Schultz2016}.
 
-One of the main functions of the Arduino-shield duo is producing sound. As the output pins in Arduino are only capable of having digital values (either HIGH or LOW), a technique called pulse width modulation (PWM) is needed, where the pin is switched between HIGH and LOW at a high frequency with a variable duty cycle. The averaging over many oscillations leads to a continuous mean value depending on the duty cycle (close to LOW for a small duty cycle, or close to HIGH for a large duty cycle).
+One of the main functions of the Arduino-shield duo is producing sound, that is an analog voltage signal. However, the output pins in Arduino are only capable of having digital values (either HIGH or LOW), so a technique called pulse width modulation (PWM) is needed, where the pin is switched between HIGH and LOW at a high frequency with a variable duty cycle. The averaging over many oscillations leads to a continuous mean value depending on the duty cycle (close to LOW for a small duty cycle, or close to HIGH for a large duty cycle).
 
 PWM is performed via timers, which are dedicated internal clocks/counters that operate in parallel with the central processor and can execute small portions of code on an interrupt basis. Timers in all operation modes work by counting from 0 through $2^b-1$, where $b$ is the number of bits of the timer, at a frequency $f_{\mbox{\scriptsize timer}} = 16\,\mbox{MHz}/2^b$, where 16 MHz is the oscillation frequency of the crystal in Arduino. Once counting reaches its TOP value it overflows and starts over again. The counting frequency can be modified by setting prescalers according to eq.\ \ref{ec.prescaling} \cite{arduinomanual}:
 \begin{equation}
@@ -183,12 +183,12 @@ PWM is performed via timers, which are dedicated internal clocks/counters that o
 
 \noindent Prescaler $N$ can take values $N=1,8,16,\dots$.
 
-Every timer has two channels each associated with a different output pin, and can have different duty cycles. We used timers to generate sounds corresponding to stimuli and (optional) auditory feedback from the taps, and to generate masking noise. The appropiate timer configuration is known as FastPWM and is shown in Figure \ref{fig.FastPWM} \cite{TimersOVF}.
+Every timer has two channels each associated with a different output pin, and can have different duty cycles. We used timers to generate sounds corresponding to stimuli and (optional) auditory feedback from the taps, and to generate masking noise. The appropiate timer configuration is known as FastPWM (with reset on overflow) and is shown in Figure \ref{fig.FastPWM} \cite{TimersOVF}.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{figures/FastPWM_cb.jpg}
-    \caption{Timing diagram of a timer in 8-bit Fast PWM mode. The timer counts from 0 through 255 where it overflows and executes an interrupt. Registers OCRnA and OCRnB determine the duty cycle of each channel.}
+    \caption{Timing diagram of a timer in 8-bit Fast PWM mode. The timer counts from 0 through 255 where it overflows and executes an interrupt. Registers OCRnA and OCRnB determine the duty cycle of each channel. Reproduced from \cite{TimersOVF}}
     \label{fig.FastPWM}
 \end{figure}
 
@@ -205,12 +205,12 @@ An analogous sound wave can be produced by a digital output by means of PWM: the
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{figures/EsquemaPWM.png}
-    \caption{PWM with a relatively slowly varying duty cycle can produce a smooth sinusoidal signal with a well-defined frequency.}
+    \caption{PWM with a relatively slowly varying duty cycle (blue curve) followed by low-pass filtering can produce a smooth sinusoidal signal with a well-defined frequency (orange curve).}
     \label{fig.PWMsine}
 \end{figure}
 
 
-The frequency of the sinusoidal is determined by the frequency of the duty cycle, and this in turn is set in the following way. Every time the timer overflows we set a new OCRnX value according to a lookup table with values that uniformly sample one period of the desired waveform, such that the duty cycle follows it. Figure \ref{fig.TablaSenoCompletay440} shows the contents of the lookup table for a sinusoidal waveform (orange curve). The actual frequency of the duty cycle (and thus of the sound signal) can be chosen by down- or up-sampling the lookup table. Down-sampling (by skipping values) leads to higher frequencies, while up-sampling (by repeating values) leads to lower frequencies. Either way can be detrimental to sound quality if excessive.
+The frequency of the sinusoidal is determined by the frequency of the duty cycle, and this in turn is set in the following way. Every time the timer overflows we set a new OCRnX value according to a lookup table with values that uniformly sample one period of the desired waveform, such that the duty cycle follows it. Figure \ref{fig.TablaSenoCompletay440} shows the contents of the lookup table for a sinusoidal waveform (orange curve). The actual frequency of the duty cycle (and thus of the sound signal) can be chosen by down- or up-sampling the lookup table. Down-sampling (by skipping values) leads to higher frequencies, while up-sampling (by repeating values) leads to lower frequencies. Either way can be detrimental to sound quality if excessive. When up-sampling, quality can be improved by interpolating (instead of just repeating values) but that would increase the load on the micro-controller so a trade-off analysis would be needed.
 
 The blue curve in Figure \ref{fig.TablaSenoCompletay440} corresponds to down-sampling the lookup table to get a 440 Hz sinusoidal waveform. The lookup table is down-sampled by selecting values separated by a fixed quantity called the {\em frequency tuning word} (FTW):
 
